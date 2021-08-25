@@ -23,10 +23,10 @@ clock = pygame.time.Clock()
 
 # 1. 사용자 게임 초기화 ( 배경화면, 게임 이미지, 좌표, 폰트 등)
 
-background = pygame.image.load('C:\\Users\\user\\game_pygame\\pygame_basic\\back.png')
-character = pygame.image.load('C:\\Users\\user\\game_pygame\\pygame_basic\\dog.png')
-ddong = pygame.image.load('C:\\Users\\user\\game_pygame\\pygame_basic\\ddong.png')
-ddong2 = pygame.image.load('C:\\Users\\user\\game_pygame\\pygame_basic\\ddong.png')
+background = pygame.image.load('C:\\Users\\user\\make_game\\pygame_basic\\back.png')
+character = pygame.image.load('C:\\Users\\user\\make_game\\pygame_basic\\dog.png')
+ddong = pygame.image.load('C:\\Users\\user\\make_game\\pygame_basic\\ddong.png')
+ddong2 = pygame.image.load('C:\\Users\\user\\make_game\\pygame_basic\\ddong.png')
 
 character_size = character.get_rect().size
 character_size_width = character_size[0]
@@ -54,8 +54,10 @@ ddong2_x_pos = random.randrange(0,screen_width-ddong_size_width)
 ddong2_y_pos = -100
 ddong2_speed = ddong_speed
 
-game_font = pygame.font.Font(None,  40)
+game_font = pygame.font.Font(None, 60)
+timer_font = pygame.font.Font(None, 60)
 
+score = 0
 
 running = True
 while running:
@@ -97,12 +99,14 @@ while running:
     if ddong_y_pos > screen_height - ddong_size_height:
         ddong_y_pos = 0
         ddong_x_pos = random.randrange(0,screen_width-ddong_size_width)
-    
+        score += 100
+
     ddong_y_pos += ddong_speed * dt 
 
     if ddong2_y_pos > screen_height - ddong_size_height:
         ddong2_y_pos = random.randint(-200,-100)
         ddong2_x_pos = random.randrange(0,screen_width-ddong_size_width)
+        score += 100
     
     ddong2_y_pos += ddong_speed * dt 
 
@@ -131,6 +135,13 @@ while running:
     screen.blit(character, (character_x_pos, character_y_pos))
     screen.blit(ddong, (ddong_x_pos,ddong_y_pos))
     screen.blit(ddong2, (ddong2_x_pos,ddong2_y_pos))
+
+    scoring = game_font.render(str(int(score)), True, (0,255,255))
+    screen.blit(scoring, (screen_width - (pygame.font.Font.get_linesize(game_font)+100), 10))
+
+    timer = pygame.time.get_ticks()/1000
+    timer_act = game_font.render(str(int(timer)), True, (255,255,255))
+    screen.blit(timer_act, (10,10))
 
     pygame.display.update()
 
