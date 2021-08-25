@@ -1,5 +1,6 @@
 import pygame
 import random
+import sqlite3
 
 # 기본 초기화
 pygame.init()
@@ -14,6 +15,13 @@ pygame.display.set_caption("DDong Game")
  
 # FPS
 clock = pygame.time.Clock()
+
+# DB 연동
+file_path = "./pygame_basic/database.db"
+conn= sqlite3.connect(file_path, isolation_level=None)
+c = conn.cursor()
+c.execute("CREATE TABLE IF NOT EXISTS user_records(id INTEGER PRIMARY KEY, user_name text,score INTEGER)")
+
 ##########################################################
 
 # 캐릭터는 화면 가장아래, 좌우로만 이동가능
@@ -127,6 +135,26 @@ while running:
 
     if character_rect.collidelist(ddong_list) != -1:
         print("충돌했어요")
+        c.execute("SELECT count(*) FROM user_records")
+        id_ = int(c.fetchone()[0])
+        name = input("이름을 입력하세요")
+        c.execute("INSERT INTO user_records(id, user_name, score) VALUES (?,?,?)", (id_ + 1, str(name), score))
+        c.execute("SELECT user_name, score FROM user_records ORDER BY score DESC limit 5")
+        ending = True
+        space = 0
+        while ending:
+            for i in range(1,6):
+                cursor = c.fetchone()
+                names = game_font.render(str(i)+"."+str(cursor[0]),True,(255,255,0))
+                records = game_font.render(str(int(cursor[1])),True,(255,255,0))
+                screen.blit(names, (screen_width/2 - 30, screen_height/2 - 200 + space))
+                screen.blit(records, (screen_width/2 + 60, screen_height/2 - 200 + space))
+
+                pygame.display.update()
+                space += 50
+                
+            pygame.time.delay(10000)
+            ending = False
         running = False
 
     # 5. 화면에 그리기
